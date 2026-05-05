@@ -1,0 +1,16 @@
+{
+  "activeFeature": "ebird-file-comparison",
+  "sessionNumber": 2,
+  "currentStage": 8,
+  "lastCompletedStage": 7,
+  "lastCheckpointStatus": "in-progress",
+  "confirmedArtifacts": [
+    "pipeline/ebird-file-comparison/strategic-brief.md",
+    "pipeline/ebird-file-comparison/prd.md",
+    "pipeline/ebird-file-comparison/schema.md",
+    "pipeline/ebird-file-comparison/design-spec.md",
+    "pipeline/ebird-file-comparison/design.html"
+  ],
+  "createdAt": "2026-05-04T20:00:00Z",
+  "updatedAt": "2026-05-04T21:20:00Z"
+}

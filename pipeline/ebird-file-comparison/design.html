@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eBird List Comparer — Design Mockup</title>
+  <style>
+    :root {
+      --primary: #2E7D52;
+      --primary-light: #e8f5ee;
+      --primary-hover: #246644;
+      --foreground: #0d1117;
+      --muted-foreground: #6b7280;
+      --background: #ffffff;
+      --border: #e5e7eb;
+      --muted: #f9fafb;
+      --radius: 8px;
+      --font: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--background);
+      color: var(--foreground);
+      min-height: 100vh;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--foreground);
+      letter-spacing: -0.2px;
+    }
+
+    .logo-mark {
+      width: 22px;
+      height: 22px;
+      background: var(--primary);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-mark svg {
+      width: 13px;
+      height: 13px;
+      color: white;
+    }
+
+    .reset-btn {
+      font-size: 13px;
+      color: var(--primary);
+      background: none;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-family: var(--font);
+      font-weight: 500;
+      transition: all 0.12s ease;
+      display: none;
+    }
+
+    .reset-btn:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    /* Main */
+    .main {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 56px 32px 80px;
+    }
+
+    /* ── Upload State ── */
+    .upload-state { display: block; }
+    .results-state { display: none; }
+
+    .page-title {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      color: var(--foreground);
+      margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+      font-size: 15px;
+      color: var(--muted-foreground);
+      margin-bottom: 40px;
+    }
+
+    .drop-zones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 36px 24px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      background: var(--muted);
+      min-height: 192px;
+      position: relative;
+      text-align: center;
+    }
+
+    .drop-zone:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .drop-zone.loaded {
+      border-color: var(--primary);
+      border-style: solid;
+      background: var(--primary-light);
+    }
+
+    .zone-label {
+      position: absolute;
+      top: 14px;
+      left: 18px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted-foreground);
+    }
+
+    .drop-zone.loaded .zone-label { color: var(--primary); }
+
+    .upload-icon {
+      width: 36px;
+      height: 36px;
+      color: #d1d5db;
+    }
+
+    .drop-zone.loaded .upload-icon { color: var(--primary); }
+
+    .zone-primary-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--foreground);
+    }
+
+    .zone-secondary-text {
+      font-size: 13px;
+      color: var(--muted-foreground);
+    }
+
+    .file-loaded-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .file-loaded-meta {
+      font-size: 12px;
+      color: var(--primary);
+      opacity: 0.8;
+    }
+
+    .compare-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: background 0.12s;
+      letter-spacing: -0.1px;
+    }
+
+    .compare-btn:hover { background: var(--primary-hover); }
+
+    .mockup-note {
+      text-align: center;
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 14px;
+    }
+
+    /* ── Results State ── */
+    .results-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .results-title {
+      font-size: 15px;
+      color: var(--muted-foreground);
+    }
+
+    .results-files {
+      font-size: 13px;
+      color: var(--muted-foreground);
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      background: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .stat {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      border-right: 1px solid var(--border);
+    }
+
+    .stat:last-child { border-right: none; }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      color: var(--foreground);
+      line-height: 1;
+    }
+
+    .stat-value.primary { color: var(--primary); }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+
+    .result-panel {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      background: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    .panel-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: white;
+      background: var(--primary);
+      padding: 2px 7px;
+      border-radius: 999px;
+    }
+
+    .panel-list {
+      overflow-y: auto;
+      max-height: 400px;
+      flex: 1;
+    }
+
+    .bird-item {
+      padding: 8px 18px;
+      font-size: 13.5px;
+      color: var(--foreground);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+
+    .bird-item:last-child { border-bottom: none; }
+    .bird-item:hover { background: var(--muted); }
+
+    /* Error state (for reference) */
+    .zone-error {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
+
+    .zone-error-text {
+      font-size: 12px;
+      color: #dc2626;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/>
+      </svg>
+    </div>
+    eBird List Comparer
+  </div>
+  <button class="reset-btn" id="resetBtn" onclick="showUpload()">← Compare new files</button>
+</header>
+
+<!-- ── Upload State ── -->
+<main class="main upload-state" id="uploadState">
+  <h1 class="page-title">Compare two eBird life lists</h1>
+  <p class="page-subtitle">Drop your eBird backup CSV files below to see which birds you share and which are unique to each list.</p>
+
+  <div class="drop-zones">
+    <div class="drop-zone loaded" id="zoneA">
+      <span class="zone-label">File A</span>
+      <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+      </svg>
+      <span class="file-loaded-name">MyEBirdData_dave.csv</span>
+      <span class="file-loaded-meta">15 species found</span>
+    </div>
+
+    <div class="drop-zone loaded" id="zoneB">
+      <span class="zone-label">File B</span>
+      <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+      </svg>
+      <span class="file-loaded-name">MyEBirdData_sarah.csv</span>
+      <span class="file-loaded-meta">14 species found</span>
+    </div>
+  </div>
+
+  <button class="compare-btn" onclick="showResults()">Compare Lists</button>
+  <p class="mockup-note">Design mockup — click Compare Lists to preview results</p>
+</main>
+
+<!-- ── Results State ── -->
+<main class="main results-state" id="resultsState">
+  <div class="results-header">
+    <span class="results-title">Comparing <strong>dave.csv</strong> and <strong>sarah.csv</strong></span>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="stat-value">15</span>
+      <span class="stat-label">dave.csv total</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">14</span>
+      <span class="stat-label">sarah.csv total</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value primary">10</span>
+      <span class="stat-label">In both</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">5</span>
+      <span class="stat-label">dave.csv only</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">4</span>
+      <span class="stat-label">sarah.csv only</span>
+    </div>
+  </div>
+
+  <div class="results-grid">
+    <div class="result-panel">
+      <div class="panel-header">
+        <span class="panel-title">In Both</span>
+        <span class="panel-badge">10</span>
+      </div>
+      <div class="panel-list">
+        <div class="bird-item">American Robin</div>
+        <div class="bird-item">Black-capped Chickadee</div>
+        <div class="bird-item">Blue Jay</div>
+        <div class="bird-item">Canada Goose</div>
+        <div class="bird-item">Common Loon</div>
+        <div class="bird-item">Dark-eyed Junco</div>
+        <div class="bird-item">House Sparrow</div>
+        <div class="bird-item">Mallard</div>
+        <div class="bird-item">Northern Cardinal</div>
+        <div class="bird-item">Song Sparrow</div>
+      </div>
+    </div>
+
+    <div class="result-panel">
+      <div class="panel-header">
+        <span class="panel-title">dave.csv only</span>
+        <span class="panel-badge">5</span>
+      </div>
+      <div class="panel-list">
+        <div class="bird-item">Downy Woodpecker</div>
+        <div class="bird-item">Eastern Bluebird</div>
+        <div class="bird-item">House Finch</div>
+        <div class="bird-item">Red-tailed Hawk</div>
+        <div class="bird-item">White-throated Sparrow</div>
+      </div>
+    </div>
+
+    <div class="result-panel">
+      <div class="panel-header">
+        <span class="panel-title">sarah.csv only</span>
+        <span class="panel-badge">4</span>
+      </div>
+      <div class="panel-list">
+        <div class="bird-item">American Crow</div>
+        <div class="bird-item">Baltimore Oriole</div>
+        <div class="bird-item">Cedar Waxwing</div>
+        <div class="bird-item">Ruby-throated Hummingbird</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  function showResults() {
+    document.getElementById('uploadState').style.display = 'none';
+    document.getElementById('resultsState').style.display = 'block';
+    document.getElementById('resetBtn').style.display = 'block';
+  }
+  function showUpload() {
+    document.getElementById('uploadState').style.display = 'block';
+    document.getElementById('resultsState').style.display = 'none';
+    document.getElementById('resetBtn').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
