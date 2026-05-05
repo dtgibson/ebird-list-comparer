@@ -10,4 +10,6 @@ This project uses the Weft framework. Run /new-project to get started.
 
 ## Conventions
 
-[Conventions will be added here as your project develops]
+### ESLint — shadcn/ui constant exports
+
+shadcn/ui components (e.g. `button.tsx`) export both a component and a variant constant (e.g. `buttonVariants`). The project ESLint config sets `allowConstantExport: true` on the `react-refresh/only-export-components` rule to permit this. Do not revert this — it will cause CI to fail.
