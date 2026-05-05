@@ -10,10 +10,12 @@
   "smsProvider": null,
   "deploymentTarget": "vercel",
   "createdAt": "2026-05-04T00:00:00Z",
-  "updatedAt": "2026-05-04T00:00:00Z",
+  "updatedAt": "2026-05-04T20:00:00Z",
+  "setupComplete": true,
   "stack": {
     "componentLibrary": "shadcn-ui",
-    "designTokens": null,
+    "designTokens": "src/index.css",
+    "brandSystem": "brand.md",
     "testRunner": "vitest",
     "cicd": "github-actions",
     "environments": {
