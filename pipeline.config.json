@@ -1,0 +1,25 @@
+{
+  "name": "ebird-list-comparer",
+  "type": "web_app",
+  "entryPath": "new",
+  "repoURL": "https://github.com/dtgibson/ebird-list-comparer",
+  "repoProvider": "github",
+  "frontend": "react-vite-tailwind",
+  "backend": "none",
+  "emailProvider": null,
+  "smsProvider": null,
+  "deploymentTarget": "vercel",
+  "createdAt": "2026-05-04T00:00:00Z",
+  "updatedAt": "2026-05-04T00:00:00Z",
+  "stack": {
+    "componentLibrary": "shadcn-ui",
+    "designTokens": null,
+    "testRunner": "vitest",
+    "cicd": "github-actions",
+    "environments": {
+      "dev": "main",
+      "staging": null,
+      "prod": null
+    }
+  }
+}
