@@ -70,7 +70,7 @@ describe('parseEbirdCSV', () => {
     expect(result.species).toEqual(new Set(['American Robin']))
   })
 
-  it('excludes subspecies entries containing parentheses', () => {
+  it('maps subspecies entries to their parent species name', () => {
     const csv = [
       'Submission ID,Common Name',
       'S1,Yellow-rumped Warbler',
@@ -79,6 +79,27 @@ describe('parseEbirdCSV', () => {
       'S4,Mallard (Domestic type)',
     ].join('\n')
     const result = parseEbirdCSV('test.csv', csv)
-    expect(result.species).toEqual(new Set(['Yellow-rumped Warbler']))
+    expect(result.species).toEqual(new Set(['Yellow-rumped Warbler', 'Dark-eyed Junco', 'Mallard']))
+  })
+
+  it('counts a species seen only under a subspecies name', () => {
+    const csv = [
+      'Submission ID,Common Name',
+      'S1,American Robin',
+      'S2,Yellow-rumped Warbler (Myrtle)',
+    ].join('\n')
+    const result = parseEbirdCSV('test.csv', csv)
+    expect(result.species).toEqual(new Set(['American Robin', 'Yellow-rumped Warbler']))
+  })
+
+  it('excludes hybrid entries containing " x "', () => {
+    const csv = [
+      'Submission ID,Common Name',
+      'S1,American Robin',
+      'S2,Mallard x American Black Duck (hybrid)',
+      'S3,Glaucous-winged x Western Gull',
+    ].join('\n')
+    const result = parseEbirdCSV('test.csv', csv)
+    expect(result.species).toEqual(new Set(['American Robin']))
   })
 })

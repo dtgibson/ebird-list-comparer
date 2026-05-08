@@ -26,7 +26,13 @@ function parseCSVLine(line: string): string[] {
 }
 
 function isExcluded(name: string): boolean {
-  return name.endsWith(' sp.') || name.includes('(') || name.includes('/')
+  return name.endsWith(' sp.') || name.includes('/') || name.includes(' x ')
+}
+
+function normalizeSpeciesName(name: string): string {
+  const parenIdx = name.indexOf('(')
+  if (parenIdx === -1) return name
+  return name.slice(0, parenIdx).trim()
 }
 
 export function parseEbirdCSV(filename: string, content: string): FileData {
@@ -52,7 +58,7 @@ export function parseEbirdCSV(filename: string, content: string): FileData {
     if (!line) continue
     const cols = parseCSVLine(line)
     const name = cols[commonNameIdx]?.trim().replace(/^"|"$/g, '')
-    if (name && !isExcluded(name)) species.add(name)
+    if (name && !isExcluded(name)) species.add(normalizeSpeciesName(name))
   }
 
   return { filename, species }
